@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>太子のあした - 太子町の子どもたちの笑顔 - presented by NPO法人姫路YMCA</title>
+    
+    <!-- Favicon - NPO法人姫路YMCAロゴ -->
+    <link rel="icon" type="image/png" href="https://page.gensparksite.com/v1/base64_upload/55b4c707311d7c5793d52e16c006746d">
+    <link rel="shortcut icon" href="https://page.gensparksite.com/v1/base64_upload/55b4c707311d7c5793d52e16c006746d">
+    <link rel="apple-touch-icon" href="https://page.gensparksite.com/v1/base64_upload/55b4c707311d7c5793d52e16c006746d">
+    
+    <!-- Performance Optimizations: DNS prefetch and preconnect -->
+    <link rel="dns-prefetch" href="//unpkg.com">
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="//images.unsplash.com">
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    
+    <!-- Critical CSS - Custom styles first for fastest render -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Leaflet CSS with fallback -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+          crossorigin=""
+          onerror="console.error('❌ Failed to load Leaflet CSS from unpkg'); this.href='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css';"/>
+    
+    <!-- Font Awesome for icons - async loading -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css"></noscript>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="data/areas.json" as="fetch" crossorigin>
+    <link rel="preload" href="data/photos.json" as="fetch" crossorigin>
+</head>
+<body>
+    <!-- Header - iOS style -->
+    <header class="app-header" role="banner">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="header-logo">
+                    <img src="https://page.gensparksite.com/v1/base64_upload/55b4c707311d7c5793d52e16c006746d" 
+                         alt="NPO法人姫路YMCAロゴ" 
+                         class="ymca-logo"
+                         loading="eager"
+                         role="img"
+                         aria-label="NPO法人姫路YMCA - 運営団体のロゴ">
+                </div>
+                <div class="title-container">
+                    <h1 id="headerTitle">太子のあした</h1>
+                    <p class="subtitle">presented by NPO法人姫路YMCA</p>
+                </div>
+            </div>
+            <div class="header-center">
+                <!-- 中央は空白 -->
+            </div>
+            <div class="header-right">
+                <a href="https://himeji-ymca.org/" target="_blank" rel="noopener noreferrer" class="organization-link" 
+                   aria-label="NPO法人姫路YMCAの運営団体ページを新しいタブで開く">
+                    <span class="organization-text">運営団体</span>
+                    <i class="fas fa-external-link-alt" aria-hidden="true"></i>
+                    <span class="sr-only">外部リンク</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content - Map Only -->
+    <main class="main-content" role="main">
+        <!-- Map View -->
+        <div id="mapView" class="view-container">
+            <div id="map" class="map-container" role="application" aria-label="太子町フォトマップ - マーカーをクリックして写真を表示"></div>
+            
+            <!-- Map Controls -->
+            <div class="map-controls">
+                <button id="centerBtn" class="control-btn" title="中心に戻る">
+                    <i class="fas fa-crosshairs"></i>
+                </button>
+                <button id="addPhotoBtn" class="control-btn add-photo-btn" title="写真を追加">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            
+            <!-- Area Info Panel -->
+            <div id="areaInfoPanel" class="area-info-panel" style="display: none;">
+                <div class="area-info-content">
+                    <div class="area-header">
+                        <div class="area-color-dot" id="areaColorDot"></div>
+                        <h3 id="areaInfoName"></h3>
+                        <button id="closeAreaInfo" class="close-btn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <p id="areaInfoDescription"></p>
+                    <div class="area-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-camera"></i>
+                            <span id="areaPhotoCount">0枚の写真</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-tag"></i>
+                            <span id="areaCategory">カテゴリ</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-clock"></i>
+                            <span id="areaLastUpdate">最終更新</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Photo Filter Controls removed for simplicity -->
+                    
+                    <!-- 🎯 Display Mode Controls -->
+                    <div class="display-mode-controls">
+                        <button id="gridModeBtn" class="mode-btn active">
+                            <i class="fas fa-th"></i> グリッド
+                        </button>
+                        <button id="timelineModeBtn" class="mode-btn">
+                            <i class="fas fa-clock"></i> タイムライン
+                        </button>
+                    </div>
+                    
+                    <!-- Grid View -->
+                    <div class="area-photos-grid" id="areaPhotosGrid">
+                        <!-- 写真グリッドが動的に追加される -->
+                    </div>
+                    
+                    <!-- 🎯 Timeline View -->
+                    <div class="area-photos-timeline" id="areaPhotosTimeline" style="display: none;">
+                        <!-- タイムライン表示が動的に追加される -->
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div id="photoPagination" class="pagination" style="display: none;">
+                        <button id="prevPage" class="pagination-btn">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span id="pageInfo" class="page-info">1 / 1</span>
+                        <button id="nextPage" class="pagination-btn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="load-more-container">
+                        <button id="loadMorePhotos" class="secondary-btn" style="display: none;">
+                            さらに読み込む
+                        </button>
+                        <div id="loadingPhotos" class="loading-indicator" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            読み込み中...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Photo Detail Modal -->
+        <div id="photoModal" class="photo-modal" style="display: none;">
+            <div class="modal-backdrop" id="modalBackdrop"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalPhotoTitle"></h3>
+                    <button id="closeModal" class="close-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="photo-container">
+                        <img id="modalPhotoImage" src="" alt="">
+                        <button id="prevModalPhoto" class="nav-btn prev" style="display: none;">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button id="nextModalPhoto" class="nav-btn next" style="display: none;">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="photo-info">
+                        <p id="modalPhotoDescription"></p>
+                        <div class="photo-meta">
+                            <div class="meta-row">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span id="modalPhotoLocation"></span>
+                            </div>
+                            <div class="meta-row">
+                                <i class="fas fa-clock"></i>
+                                <span id="modalPhotoDate"></span>
+                            </div>
+                        </div>
+                        <div id="modalPhotoTags" class="photo-tags">
+                            <!-- タグが動的に追加される -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Photo Modal -->
+        <div id="addPhotoModal" class="photo-modal" style="display: none;">
+            <div class="modal-backdrop" id="addPhotoBackdrop"></div>
+            <div class="modal-content add-photo-modal">
+                <div class="modal-header">
+                    <h3>新しい写真を追加</h3>
+                    <button id="closeAddPhotoModal" class="close-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addPhotoForm" class="add-photo-form">
+                        <div class="form-group">
+                            <label for="photoTitle">タイトル *</label>
+                            <input type="text" id="photoTitle" name="title" required placeholder="写真のタイトルを入力">
+                        </div>
+                        <div class="form-group">
+                            <label for="photoDescription">説明</label>
+                            <textarea id="photoDescription" name="description" rows="3" placeholder="写真の説明を入力（省略可）"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="photoImageUrl">画像URL *</label>
+                            <input type="url" id="photoImageUrl" name="image_url" required placeholder="https://example.com/image.jpg">
+                            <small>Unsplashなどの写真URLを入力してください</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="photoLocation">場所</label>
+                            <input type="text" id="photoLocation" name="location" placeholder="撮影場所を入力">
+                        </div>
+                        <div class="form-group">
+                            <label for="photoTags">タグ</label>
+                            <input type="text" id="photoTags" name="tags" placeholder="タグをカンマ区切りで入力（例: 風景,自然,夕日）">
+                        </div>
+                        <div class="form-group">
+                            <label>位置情報</label>
+                            <div class="location-info">
+                                <span>緯度: <span id="selectedLat">--</span></span>
+                                <span>経度: <span id="selectedLng">--</span></span>
+                                <button type="button" id="selectLocationBtn" class="location-btn">
+                                    <i class="fas fa-map-marker-alt"></i> 地図で位置を選択
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" id="cancelAddPhoto" class="secondary-btn">キャンセル</button>
+                            <button type="submit" id="submitAddPhoto" class="primary-btn">写真を追加</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Location Selection Indicator -->
+        <div id="locationMarker" class="location-marker" style="display: none;">
+            <i class="fas fa-map-marker-alt"></i>
+        </div>
+    </main>
+
+
+
+    <!-- Loading overlay with progress -->
+    <div id="loadingOverlay" class="loading-overlay" role="dialog" aria-labelledby="loading-title" aria-describedby="loading-desc">
+        <div class="loading-spinner">
+            <div class="loading-logo">
+                <img src="https://page.gensparksite.com/v1/base64_upload/55b4c707311d7c5793d52e16c006746d" 
+                     alt="NPO法人姫路YMCAロゴ" 
+                     class="loading-ymca-logo"
+                     loading="eager">
+            </div>
+            <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
+            <h2 id="loading-title">データを読み込み中...</h2>
+            <p id="loading-desc">太子町の未来の瞬間を準備しています</p>
+            <div class="progress-container" aria-hidden="true">
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill"></div>
+                </div>
+                <div id="progressText" class="progress-text">0%</div>
+            </div>
+            <div id="loadingSteps" class="loading-steps">
+                <div class="loading-step" id="step-data">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    <span>データ読み込み中...</span>
+                </div>
+                <div class="loading-step" id="step-map">
+                    <i class="fas fa-circle"></i>
+                    <span>地図を準備中...</span>
+                </div>
+                <div class="loading-step" id="step-images">
+                    <i class="fas fa-circle"></i>
+                    <span>画像を準備中...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance optimized JavaScript loading -->
+    <script>
+        // Performance monitoring
+        const perfStart = performance.now();
+        console.log('⏱️ ページロード開始:', perfStart);
+
+        // Preload modules for faster execution
+        const modulePreloadLinks = [
+            'js/config/constants.js',
+            'js/utils/EventEmitter.js',
+            'js/utils/ErrorHandler.js',
+            'js/utils/ImageHandler.js',
+            'js/modules/DataManager.js',
+            'js/modules/MapManager.js',
+            'js/modules/MarkerManager.js',
+            'js/modules/UIManager.js'
+        ];
+
+        modulePreloadLinks.forEach(href => {
+            const link = document.createElement('link');
+            link.rel = 'modulepreload';
+            link.href = href;
+            document.head.appendChild(link);
+        });
+
+        // Optimized Leaflet loading with async/defer strategy
+        function loadLeafletFallback() {
+            console.log('🔄 Loading Leaflet fallback from jsDelivr...');
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js';
+            script.async = true;
+            script.onload = () => {
+                console.log('✅ Leaflet fallback loaded successfully');
+                initializeApp();
+            };
+            script.onerror = () => {
+                console.error('❌ Leaflet fallback also failed');
+                showFallbackMessage();
+            };
+            document.head.appendChild(script);
+        }
+
+        function showFallbackMessage() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) {
+                loadingOverlay.innerHTML = `
+                    <div class="loading-spinner">
+                        <i class="fas fa-exclamation-triangle" style="color: #ff6b6b;"></i>
+                        <h3>読み込みエラー</h3>
+                        <p>地図ライブラリの読み込みに失敗しました。</p>
+                        <button onclick="location.reload()" style="padding: 10px 20px; margin-top: 10px; background: #007aff; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                            再読み込み
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        let appInitialized = false;
+        function initializeApp() {
+            if (appInitialized) return;
+            appInitialized = true;
+            
+            // Load main application
+            console.log('🚀 Starting app module import...');
+            import('./js/app-refactored.js').then((module) => {
+                const perfEnd = performance.now();
+                console.log(`✅ アプリケーション読み込み完了: ${(perfEnd - perfStart).toFixed(2)}ms`);
+                console.log('📦 Module loaded:', module);
+            }).catch(error => {
+                console.error('❌ アプリケーション読み込みエラー:', error);
+                console.error('❌ Error stack:', error.stack);
+                showFallbackMessage();
+            });
+        }
+    </script>
+    
+    <!-- Leaflet JavaScript with performance optimization -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
+            crossorigin=""
+            async
+            onload="console.log('✅ Leaflet loaded from unpkg'); initializeApp();"
+            onerror="console.error('❌ Failed to load Leaflet from unpkg'); loadLeafletFallback();"></script>
+    
+    <!-- Timeout fallback for slow connections -->
+    <script>
+        setTimeout(() => {
+            if (typeof L === 'undefined' && !appInitialized) {
+                console.warn('⚠️ Leaflet loading timeout (5s), trying fallback...');
+                loadLeafletFallback();
+            }
+        }, 5000);
+    </script>
+    
+    <!-- Fallback for old version (comment out when testing new version) -->
+    <!-- <script src="js/app.js"></script> -->
+</body>
+</html>
