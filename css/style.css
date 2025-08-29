@@ -1,0 +1,2626 @@
+/* iOS Photos App Style - Map Focus */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Placeholder Image Styles */
+img[src*="data:image/svg+xml"] {
+    background-color: #333;
+    border-radius: inherit;
+}
+
+.photo-area-marker img[src*="data:image/svg+xml"] {
+    background-color: #444;
+    opacity: 0.8;
+}
+
+.grid-photo img[src*="data:image/svg+xml"] {
+    background-color: #333;
+    filter: grayscale(1);
+}
+
+#modalPhotoImage[src*="data:image/svg+xml"] {
+    background-color: #222;
+    border: 2px solid #444;
+}
+
+/* 🎯 カスタムマーカーアイコン - 黒背景を完全除去 */
+.leaflet-marker-icon.custom-marker-icon {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+.leaflet-marker-icon.custom-marker-icon img {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Leafletのデフォルトマーカーアイコンスタイルを完全にオーバーライド */
+.leaflet-marker-icon {
+    background: transparent !important;
+}
+
+.leaflet-marker-icon img {
+    background: transparent !important;
+}
+
+/* 新しい単層システム用クラスターマーカー */
+.cluster-marker .marker-content {
+    border: 2px solid #007AFF !important;
+    box-shadow: 0 3px 12px rgba(0, 122, 255, 0.4) !important;
+}
+
+.cluster-marker .marker-content:hover {
+    transform: scale(1.08) !important;
+    border-color: #0056CC !important;
+    box-shadow: 0 4px 16px rgba(0, 122, 255, 0.6) !important;
+}
+
+.cluster-marker .photo-count-badge {
+    background: linear-gradient(135deg, #007AFF, #0056CC) !important;
+    border: 2px solid white !important;
+}
+
+/* 旧システム用クラスターマーカー（後方互換性） */
+.cluster-marker .photo-area-marker {
+    border: 2px solid #007AFF !important;
+    box-shadow: 0 3px 12px rgba(0, 122, 255, 0.4) !important;
+}
+
+.cluster-marker .photo-area-marker:hover {
+    transform: scale(1.08) !important;
+    border-color: #0056CC !important;
+    box-shadow: 0 4px 16px rgba(0, 122, 255, 0.6) !important;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow: hidden;
+    height: 100vh;
+}
+
+/* Light Mode (Default) */
+body {
+    background-color: #f5f5f7;
+    color: #1d1d1f;
+}
+
+/* Dark Mode (System Preference) */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #ffffff;
+        color: #1d1d1f;
+    }
+}
+
+/* Header */
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 108px; /* 88px → 108px（+20px下側余白用） */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 1000;
+}
+
+/* ヘッダーロゴスタイル */
+.header-logo {
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.ymca-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 6px;
+    transition: transform 0.2s ease;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+    background: transparent;
+}
+
+.ymca-logo:hover {
+    transform: scale(1.05);
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+    .ymca-logo {
+        filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.2));
+        background: transparent;
+    }
+    
+    .loading-ymca-logo {
+        filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.2));
+        background: transparent;
+    }
+}
+
+/* Light Mode Header */
+.app-header {
+    background: rgba(255, 255, 255, 0.9);
+    border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Mode Header */
+@media (prefers-color-scheme: dark) {
+    .app-header {
+        background: rgba(0, 0, 0, 0.9);
+        border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
+    }
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    padding: 44px 20px 16px; /* 下側に16pxの余白追加 */
+}
+
+/* 上記の新しいヘッダーレイアウトで定義済み */
+
+/* 上記の新しいヘッダーレイアウトで定義済み */
+}
+
+.header-btn {
+    background: none;
+    border: none;
+    color: #007AFF;
+    font-size: 18px;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.header-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 🎯 新しいヘッダーレイアウト */
+.header-left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0; /* ロゴとタイトルの間隔はheader-logoのmargin-rightで制御 */
+}
+
+.header-center {
+    flex: 0;
+    /* 中央は空白 */
+}
+
+.header-right {
+    flex: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.title-container {
+    text-align: left;
+    line-height: 1.2;
+    padding: 4px 0; /* 上下に少し余白を追加 */
+}
+
+#headerTitle {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 2px 0;
+    letter-spacing: -0.2px;
+}
+
+.subtitle {
+    font-size: 11px;
+    font-weight: 400;
+    margin: 0;
+    opacity: 0.7;
+    letter-spacing: 0.1px;
+}
+
+/* 🔗 運営団体リンク */
+.organization-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px; /* 縦のパディングを増加 */
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.organization-text {
+    white-space: nowrap;
+}
+
+.organization-link i {
+    font-size: 11px;
+    opacity: 0.7;
+}
+
+/* Light Mode Styles */
+#headerTitle {
+    color: #1d1d1f;
+}
+
+.subtitle {
+    color: rgba(29, 29, 31, 0.6);
+}
+
+.organization-link {
+    color: #007AFF;
+    background: rgba(0, 122, 255, 0.1);
+}
+
+.organization-link:hover {
+    background: rgba(0, 122, 255, 0.15);
+    transform: translateY(-1px);
+}
+
+/* Dark Mode Styles */
+@media (prefers-color-scheme: dark) {
+    #headerTitle {
+        color: #fff;
+    }
+    
+    .subtitle {
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .organization-link {
+        color: #0A84FF;
+        background: rgba(10, 132, 255, 0.15);
+    }
+    
+    .organization-link:hover {
+        background: rgba(10, 132, 255, 0.25);
+    }
+}
+
+/* 📱 モバイル版調整 - 改良版 */
+@media (max-width: 480px) {
+    /* モバイル用ロゴサイズ調整 */
+    .ymca-logo {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .header-logo {
+        margin-right: 8px; /* モバイルでは間隔を狭く */
+    }
+    
+    #headerTitle {
+        font-size: 14px; /* ロゴ分少し小さく */
+        letter-spacing: -0.1px;
+        line-height: 1.2; /* 行間改善 */
+    }
+    
+    .subtitle {
+        font-size: 9px; /* ロゴ分少し小さく */
+        margin-top: 2px; /* 間隔調整 */
+    }
+    
+    .title-container {
+        padding: 2px 0; /* モバイルではより控えめに */
+    }
+    
+    .organization-link {
+        padding: 12px 10px; /* タッチターゲット拡大 */
+        font-size: 12px;
+        min-width: 44px; /* アクセシビリティ: 最小タッチサイズ */
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .organization-text {
+        display: none; /* モバイルではアイコンのみ */
+    }
+    
+    /* モバイル向けマップコントロール改善 */
+    .map-controls {
+        bottom: 20px;
+        right: 15px;
+        gap: 10px;
+    }
+    
+    .control-btn {
+        width: 48px !important;
+        height: 48px !important;
+        font-size: 18px;
+        /* アクセシビリティ: 十分なタッチターゲットサイズ */
+    }
+    
+    /* モバイルでのスクロール体験改善 */
+    .area-photos-container {
+        -webkit-overflow-scrolling: touch; /* iOSでのスムーズスクロール */
+    }
+}
+
+/* タブレット版調整 */
+@media (min-width: 481px) and (max-width: 768px) {
+    #headerTitle {
+        font-size: 17px;
+    }
+    
+    .subtitle {
+        font-size: 10.5px;
+    }
+    
+    .organization-link {
+        font-size: 12.5px;
+        padding: 7px 11px;
+    }
+}
+
+/* Main Content */
+.main-content {
+    position: fixed;
+    top: 108px; /* ヘッダー高さに合わせて調整 */
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ffffff;
+}
+
+.view-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Map */
+.map-container {
+    width: 100%;
+    height: 100%;
+    position: relative; /* 明示的に指定 */
+    overflow: hidden; /* 明示的に指定 */
+}
+
+#map {
+    width: 100% !important;
+    height: 100% !important;
+    position: relative !important;
+    z-index: 1;
+}
+
+.map-controls {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.control-btn {
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 22px;
+    font-size: 18px;
+    cursor: pointer;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transition: all 0.2s;
+}
+
+.control-btn:hover {
+    transform: scale(1.05);
+}
+
+.control-btn.active {
+    background: rgba(0, 122, 255, 0.8);
+    color: #fff;
+}
+
+.control-btn.active:hover {
+    background: rgba(0, 122, 255, 0.9);
+}
+
+/* Light Mode Controls */
+.control-btn {
+    background: rgba(255, 255, 255, 0.9);
+    color: #1d1d1f;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.control-btn:hover {
+    background: rgba(255, 255, 255, 0.95);
+}
+
+/* Dark Mode Controls */
+@media (prefers-color-scheme: dark) {
+    .control-btn {
+        background: rgba(0, 0, 0, 0.8);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .control-btn:hover {
+        background: rgba(0, 0, 0, 0.9);
+    }
+}
+
+/* Area Info Panel */
+.area-info-panel {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 380px;
+    max-width: calc(100vw - 40px);
+    max-height: calc(100vh - 120px);
+    border-radius: 16px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 1000;
+    animation: slideInLeft 0.3s ease-out;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Light Mode Panel */
+.area-info-panel {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* Dark Mode Panel */
+@media (prefers-color-scheme: dark) {
+    .area-info-panel {
+        background: rgba(0, 0, 0, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+}
+
+.area-info-content {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.area-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 8px;
+}
+
+.area-color-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.area-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    flex: 1;
+}
+
+/* Close button base styles removed - using scoped styles instead */
+
+.area-info-content p {
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 16px;
+}
+
+/* Light Mode Text */
+.area-header h3 {
+    color: #1d1d1f;
+}
+
+/* Area Info Panel Close Button - Light Mode */
+.area-info-panel .close-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 14px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: rgba(0, 0, 0, 0.1);
+    color: rgba(0, 0, 0, 0.7) !important;
+}
+
+.area-info-panel .close-btn:hover {
+    background: rgba(0, 0, 0, 0.2);
+    color: #1d1d1f !important;
+}
+
+.area-info-content p {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+/* Dark Mode Text */
+@media (prefers-color-scheme: dark) {
+    .area-header h3 {
+        color: #fff;
+    }
+    
+    /* Area Info Panel Close Button - Dark Mode */
+    .area-info-panel .close-btn {
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.7) !important;
+    }
+    
+    .area-info-panel .close-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff !important;
+    }
+    
+    .area-info-content p {
+        color: rgba(255, 255, 255, 0.8);
+    }
+}
+
+.area-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+
+/* Light Mode Stat Item */
+.stat-item {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+/* Dark Mode Stat Item */
+@media (prefers-color-scheme: dark) {
+    .stat-item {
+        color: rgba(255, 255, 255, 0.7);
+    }
+}
+
+.stat-item i {
+    width: 16px;
+    text-align: center;
+    color: #007AFF;
+}
+
+/* Photo Filter Controls removed for simplicity */
+
+/* Dark Mode Form Controls */
+/* Search and sort dark mode styles removed */
+
+/* Select options removed with search/sort functionality */
+
+/* Display Mode Controls */
+.display-mode-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.mode-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+/* Light Mode Mode Buttons */
+.mode-btn {
+    background: rgba(0, 0, 0, 0.1);
+    color: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.mode-btn.active {
+    background: #007AFF;
+    color: #fff;
+}
+
+.mode-btn:hover:not(.active) {
+    background: rgba(0, 0, 0, 0.15);
+}
+
+/* Dark Mode Mode Buttons */
+@media (prefers-color-scheme: dark) {
+    .mode-btn {
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .mode-btn.active {
+        background: #007AFF;
+        color: #fff;
+    }
+
+    .mode-btn:hover:not(.active) {
+        background: rgba(255, 255, 255, 0.15);
+    }
+}
+
+/* Area Photos Grid */
+.area-photos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px; /* ギャップを少し大きくしてコンテンツ高さを増加 */
+    margin-bottom: 16px;
+    max-height: 240px; /* スクロールを確実に発生させるために調整 */
+    min-height: 180px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 8px; /* パディングも少し増加 */
+    /* スクロールバーのスタイリング */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 122, 255, 0.3) transparent;
+}
+
+/* Webkit スクロールバー（Chrome, Safari） */
+.area-photos-grid::-webkit-scrollbar {
+    width: 8px; /* 幅を少し大きくして見やすく */
+}
+
+.area-photos-grid::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+.area-photos-grid::-webkit-scrollbar-thumb {
+    background: rgba(0, 122, 255, 0.4); /* 少し濃くして見やすく */
+    border-radius: 4px;
+}
+
+.area-photos-grid::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 122, 255, 0.6);
+}
+
+/* Photo Grid Item */
+.photo-item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    min-height: 80px; /* 最小高さを設定してスクロールを発生しやすくする */
+}
+
+/* 🖼️ 画像状態のスタイリング */
+.photo-item img.image-loading,
+.timeline-photo-item img.image-loading {
+    background: linear-gradient(90deg, #f0f0f0 25%, transparent 37%, #f0f0f0 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.photo-item img.image-fallback,
+.timeline-photo-item img.image-fallback {
+    opacity: 0.8;
+    filter: grayscale(0.2);
+}
+
+.photo-item img.image-loaded,
+.timeline-photo-item img.image-loaded {
+    animation: fadeIn 0.3s ease-in;
+}
+
+/* ダークモード用画像ローディング */
+@media (prefers-color-scheme: dark) {
+    .photo-item img.image-loading,
+    .timeline-photo-item img.image-loading {
+        background: linear-gradient(90deg, #2c2c2e 25%, transparent 37%, #2c2c2e 63%);
+    }
+}
+
+/* シマー効果アニメーション */
+@keyframes shimmer {
+    0% { background-position: -400% 0; }
+    100% { background-position: 400% 0; }
+}
+
+/* フェードインアニメーション */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.photo-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.photo-item:hover img {
+    transform: scale(1.05);
+}
+
+.photo-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    color: white;
+    padding: 16px 12px 12px;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.photo-item:hover .photo-overlay {
+    transform: translateY(0);
+}
+
+.photo-overlay h4 {
+    margin: 0 0 4px 0;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
+    opacity: 0.95; /* 通常時は少し薄く */
+    transition: opacity 0.3s ease;
+}
+
+/* ホバー時にタイトルも完全に白色に */
+.photo-item:hover .photo-overlay h4 {
+    opacity: 1; /* ホバー時は完全に不透明（純白） */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); /* 軽い影で可読性向上 */
+}
+
+.photo-overlay p {
+    margin: 0;
+    font-size: 11px;
+    opacity: 0.8; /* 通常時は少し薄く */
+    transition: opacity 0.3s ease;
+}
+
+/* ホバー時に日付を完全に白色に */
+.photo-item:hover .photo-overlay p {
+    opacity: 1; /* ホバー時は完全に不透明（純白） */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); /* 軽い影で可読性向上 */
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    .photo-item {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .photo-item:hover {
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+    
+    /* ダークモードでのオーバーレイ調整 */
+    .photo-overlay {
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.9)); /* より濃い背景 */
+        color: #ffffff; /* 確実に白色 */
+    }
+    
+    .photo-overlay h4 {
+        color: #ffffff; /* タイトルを確実に白色 */
+    }
+    
+    .photo-overlay p {
+        color: #ffffff; /* 日付を確実に白色 */
+    }
+    
+    /* ダークモードでのホバー効果強化 */
+    .photo-item:hover .photo-overlay h4,
+    .photo-item:hover .photo-overlay p {
+        opacity: 1;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); /* テキストに軽い影を追加 */
+    }
+}
+
+/* 🎯 Timeline View Styles */
+.area-photos-timeline {
+    max-height: 220px; /* さらに低くしてスクロールを確実に発生させる */
+    min-height: 180px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-bottom: 16px;
+    padding: 8px; /* パディングを増加 */
+    /* スクロールバーのスタイリング */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 122, 255, 0.3) transparent;
+}
+
+/* Webkit スクロールバー（Chrome, Safari）- タイムライン */
+.area-photos-timeline::-webkit-scrollbar {
+    width: 8px; /* 幅を少し大きくして見やすく */
+}
+
+.area-photos-timeline::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+.area-photos-timeline::-webkit-scrollbar-thumb {
+    background: rgba(0, 122, 255, 0.4); /* 少し濃くして見やすく */
+    border-radius: 4px;
+}
+
+.area-photos-timeline::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 122, 255, 0.6);
+}
+
+/* ダークモード用スクロールバースタイリング */
+@media (prefers-color-scheme: dark) {
+    .area-photos-grid::-webkit-scrollbar-track,
+    .area-photos-timeline::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .area-photos-grid::-webkit-scrollbar-thumb,
+    .area-photos-timeline::-webkit-scrollbar-thumb {
+        background: rgba(0, 122, 255, 0.5);
+    }
+    
+    .area-photos-grid::-webkit-scrollbar-thumb:hover,
+    .area-photos-timeline::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 122, 255, 0.7);
+    }
+}
+
+/* Timeline Date Section */
+.timeline-date-section {
+    margin-bottom: 24px;
+}
+
+.timeline-date-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* より控えめなボーダー */
+}
+
+.timeline-date-header h4 {
+    margin: 0;
+    color: rgba(0, 0, 0, 0.6); /* グレー系に変更 */
+    font-size: 15px; /* 少し小さく */
+    font-weight: 500; /* 少し軽く */
+}
+
+.photo-count {
+    background: rgba(0, 0, 0, 0.1); /* グレー系背景 */
+    color: rgba(0, 0, 0, 0.7); /* グレー系テキスト */
+    padding: 3px 8px; /* 少し小さく */
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+
+
+.timeline-photos {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.timeline-photo-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.timeline-photo-item img {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-photo-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.timeline-photo-info h5 {
+    margin: 0 0 6px 0;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.timeline-photo-info p {
+    margin: 0 0 6px 0;
+    font-size: 13px;
+    line-height: 1.4;
+    opacity: 0.8;
+}
+
+.timeline-photo-info small {
+    font-size: 12px;
+    opacity: 0.6;
+}
+
+/* Light Mode Timeline Styles */
+.timeline-photo-item {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.timeline-photo-item:hover {
+    background: rgba(255, 255, 255, 0.95);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Mode Timeline Styles */
+@media (prefers-color-scheme: dark) {
+    .timeline-date-header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* グレー系ボーダー */
+    }
+    
+    .timeline-date-header h4 {
+        color: rgba(255, 255, 255, 0.6); /* グレー系テキスト */
+    }
+    
+    .photo-count {
+        background: rgba(255, 255, 255, 0.1); /* グレー系背景 */
+        color: rgba(255, 255, 255, 0.7); /* グレー系テキスト */
+    }
+    
+    .timeline-photo-item {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .timeline-photo-item:hover {
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .timeline-photo-item img {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+}
+
+/* Responsive Grid Layout */
+@media (max-width: 768px) {
+    .area-photos-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .area-photos-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+    }
+    
+    .timeline-photo-item {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .timeline-photo-item img {
+        width: 100%;
+        height: 120px;
+        max-width: 200px;
+    }
+    
+    .timeline-photo-info {
+        text-align: center;
+        margin-top: 8px;
+    }
+}
+
+/* No Photos Message */
+.no-photos {
+    text-align: center;
+    padding: 40px 20px;
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 14px;
+    font-style: italic;
+}
+
+@media (prefers-color-scheme: dark) {
+    .no-photos {
+        color: rgba(255, 255, 255, 0.5);
+    }
+}
+
+/* Photo Loading State */
+.photo-item.loading {
+    background: rgba(0, 0, 0, 0.05);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+@media (prefers-color-scheme: dark) {
+    .photo-item.loading {
+        background: rgba(255, 255, 255, 0.05);
+    }
+}
+
+/* Light Mode Timeline Item */
+.timeline-item {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.timeline-item:hover {
+    background: rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Dark Mode Timeline Item */
+@media (prefers-color-scheme: dark) {
+    .timeline-item {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .timeline-item:hover {
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+}
+
+.timeline-photo {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.timeline-photo:hover {
+    transform: scale(1.05);
+}
+
+.timeline-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.timeline-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+/* Light Mode Timeline Title */
+.timeline-title {
+    color: #1d1d1f;
+}
+
+.timeline-title:hover {
+    color: rgba(0, 0, 0, 0.8); /* グレー系ホバー */
+}
+
+/* Dark Mode Timeline Title */
+@media (prefers-color-scheme: dark) {
+    .timeline-title {
+        color: #fff;
+    }
+    
+    .timeline-title:hover {
+        color: rgba(255, 255, 255, 0.9); /* グレー系ホバー（ダークモード） */
+    }
+}
+
+.timeline-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 12px;
+}
+
+/* Light Mode Timeline Meta */
+.timeline-meta {
+    color: rgba(0, 0, 0, 0.6);
+}
+
+/* Dark Mode Timeline Meta */
+@media (prefers-color-scheme: dark) {
+    .timeline-meta {
+        color: rgba(255, 255, 255, 0.6);
+    }
+}
+
+.timeline-date {
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.timeline-location {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.timeline-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.timeline-tag {
+    background: rgba(0, 0, 0, 0.1); /* グレー系背景 */
+    color: rgba(0, 0, 0, 0.7); /* グレー系テキスト */
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 500;
+}
+
+/* ダークモード用タイムラインタグ */
+@media (prefers-color-scheme: dark) {
+    .timeline-tag {
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.7);
+    }
+}
+
+/* Timeline Date Header (Legacy - 上書きされる) */
+.timeline-date-header {
+    margin: 16px 0 12px;
+    color: rgba(0, 0, 0, 0.6); /* グレー系 */
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Timeline Empty State */
+.timeline-empty-state {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+/* Light Mode Timeline Empty State */
+.timeline-empty-state p {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 14px;
+}
+
+/* Dark Mode Timeline Empty State */
+@media (prefers-color-scheme: dark) {
+    .timeline-empty-state p {
+        color: rgba(255, 255, 255, 0.6);
+    }
+}
+
+/* Timeline Date Group */
+.timeline-date-group {
+    margin-bottom: 28px; /* マージンを増加してコンテンツ高さを確保 */
+}
+
+.timeline-date-group:last-child {
+    margin-bottom: 0;
+}
+
+.grid-photo {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.grid-photo:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+.grid-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.grid-photo .photo-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    color: #fff;
+    font-size: 10px;
+    padding: 8px 6px 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.grid-photo:hover .photo-overlay {
+    opacity: 1;
+}
+
+.photo-overlay .photo-title {
+    font-weight: 600;
+    margin-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.photo-overlay .photo-date {
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+/* Light Mode Pagination */
+.pagination-btn {
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    color: #1d1d1f;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.page-info {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.8);
+    min-width: 60px;
+    text-align: center;
+}
+
+/* Dark Mode Pagination */
+@media (prefers-color-scheme: dark) {
+    .pagination-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+    }
+
+    .pagination-btn:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .page-info {
+        color: rgba(255, 255, 255, 0.8);
+    }
+}
+
+/* Load More */
+.load-more-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Light Mode Secondary Button and Loading */
+.secondary-btn {
+    background: rgba(0, 0, 0, 0.1);
+    color: #1d1d1f;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.secondary-btn:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.loading-indicator {
+    color: rgba(0, 0, 0, 0.7);
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Dark Mode Secondary Button and Loading */
+@media (prefers-color-scheme: dark) {
+    .secondary-btn {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .secondary-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .loading-indicator {
+        color: rgba(255, 255, 255, 0.7);
+    }
+}
+
+/* Feedback Button */
+.feedback-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    animation: heartbeat 2s ease-in-out infinite;
+}
+
+.feedback-btn:hover {
+    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.feedback-btn i {
+    color: #ffeb3b;
+}
+
+@keyframes heartbeat {
+    0%, 50%, 100% {
+        transform: scale(1);
+    }
+    25%, 75% {
+        transform: scale(1.05);
+    }
+}
+
+/* Selected Marker Enhancement */
+.selected-marker {
+    z-index: 1000 !important;
+    filter: drop-shadow(0 4px 8px rgba(255, 107, 53, 0.4));
+}
+
+.selected-marker:hover {
+    filter: drop-shadow(0 6px 12px rgba(255, 107, 53, 0.6));
+}
+
+/* Feedback Dialog styles are handled dynamically by FeedbackDialog.js */
+
+.add-photo-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Light Mode Form */
+.form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1d1d1f;
+}
+
+.form-group input,
+.form-group textarea {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    color: #1d1d1f;
+    padding: 10px 12px;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #007AFF;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.form-group small {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.6);
+    margin-top: 4px;
+}
+
+/* Dark Mode Form */
+@media (prefers-color-scheme: dark) {
+    .form-group label {
+        color: #fff;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .form-group small {
+        color: rgba(255, 255, 255, 0.6);
+    }
+}
+
+/* Light Mode Location Info */
+.location-info {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.8);
+}
+
+/* Dark Mode Location Info */
+@media (prefers-color-scheme: dark) {
+    .location-info {
+        color: rgba(255, 255, 255, 0.8);
+    }
+}
+
+.location-btn {
+    background: rgba(0, 122, 255, 0.2);
+    border: 1px solid rgba(0, 122, 255, 0.4);
+    border-radius: 6px;
+    color: #007AFF;
+    padding: 6px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.location-btn:hover {
+    background: rgba(0, 122, 255, 0.3);
+}
+
+.location-btn.active {
+    background: #007AFF;
+    color: #fff;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+/* Location Selection Marker */
+.location-marker {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 32px;
+    color: #34C759;
+    z-index: 10000;
+    pointer-events: none;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+    animation: pulse 1.5s infinite;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 8px;
+    border-radius: 50%;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+/* Form Validation */
+.form-group input.error,
+.form-group textarea.error {
+    border-color: #FF3B30;
+    background: rgba(255, 59, 48, 0.1);
+}
+
+.error-message {
+    color: #FF3B30;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+/* 新しい単層マーカーシステム（座標ズレ完全防止） */
+.photo-area-marker-simple {
+    position: relative !important;
+    pointer-events: auto;
+    z-index: 100;
+}
+
+.marker-content {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    border-radius: 50%;
+    overflow: visible;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    background: #fff;
+    pointer-events: auto;
+    transform-origin: center center;
+    
+    /* ズーム応答型ボーダーとシャドウ */
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* 小さなマーカー用のスタイル調整 */
+.photo-area-marker-simple[style*="12px"] .marker-content,
+.photo-area-marker-simple[style*="16px"] .marker-content,
+.photo-area-marker-simple[style*="18px"] .marker-content {
+    border-width: 1px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* 中〜大サイズマーカー用 */
+.photo-area-marker-simple .marker-content {
+    border-width: 2px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.marker-image {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
+
+/* 旧システム（非推奨、後方互換性のため残存） */
+.photo-area-marker-container {
+    position: relative;
+    pointer-events: auto;
+    z-index: 100;
+    width: 70px;
+    height: 70px;
+}
+
+.photo-area-marker {
+    border-radius: 50%;
+    overflow: visible;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    background: #fff;
+    pointer-events: auto;
+    transform-origin: center center;
+    z-index: 10;
+}
+
+/* 新しい単層マーカーのホバー効果 */
+.photo-area-marker-simple.hover .marker-content,
+.photo-area-marker-simple:hover .marker-content {
+    transform: scale(1.08);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    border-color: #007AFF;
+    z-index: 1000;
+}
+
+/* 🎯 選択エリアの強化されたアニメーション */
+.photo-area-marker-simple.selected .marker-content {
+    transform: scale(1.25);
+    box-shadow: 0 12px 32px rgba(0, 122, 255, 0.6);
+    border-color: #007AFF;
+    border-width: 4px;
+    z-index: 1001;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 選択中のアニメーション */
+.photo-area-marker-simple.selecting .marker-content {
+    animation: selectBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 選択解除のアニメーション */
+.photo-area-marker-simple.deselecting .marker-content {
+    animation: deselectShrink 0.3s ease-out;
+}
+
+/* パルス効果 */
+.photo-area-marker-simple.pulse-active .marker-content {
+    animation: selectedPulse 2s infinite ease-in-out;
+}
+
+/* アニメーションキーフレーム */
+@keyframes selectBounce {
+    0% {
+        transform: scale(1.08);
+    }
+    50% {
+        transform: scale(1.4);
+    }
+    100% {
+        transform: scale(1.25);
+    }
+}
+
+@keyframes deselectShrink {
+    0% {
+        transform: scale(1.25);
+    }
+    100% {
+        transform: scale(1.0);
+    }
+}
+
+@keyframes selectedPulse {
+    0%, 100% {
+        box-shadow: 0 12px 32px rgba(0, 122, 255, 0.6);
+    }
+    50% {
+        box-shadow: 0 16px 40px rgba(0, 122, 255, 0.8);
+    }
+}
+
+/* 旧システムのホバー効果（後方互換性） */
+.photo-area-marker-container.hover .photo-area-marker,
+.photo-area-marker-container:hover .photo-area-marker {
+    transform: scale(1.08);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    border-color: #007AFF;
+    z-index: 1000;
+}
+
+.photo-area-marker-container.selected .photo-area-marker {
+    transform: scale(1.2);
+    box-shadow: 0 8px 24px rgba(0, 122, 255, 0.5);
+    border-color: #007AFF;
+    border-width: 4px;
+    z-index: 1001;
+}
+
+/* タッチデバイス対応 */
+@media (hover: none) and (pointer: coarse) {
+    .photo-area-marker-simple:hover .marker-content {
+        transform: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .photo-area-marker-container:hover .photo-area-marker {
+        transform: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.9);
+    }
+}
+
+.photo-area-marker img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+    border-radius: 50%;
+}
+
+.photo-count-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: #FF3B30;
+    color: #fff;
+    border-radius: 8px;
+    padding: 1px 4px;
+    font-size: 9px;
+    font-weight: 700;
+    border: 1px solid rgba(255, 255, 255, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    min-width: 14px;
+    text-align: center;
+    line-height: 1.2;
+    pointer-events: none;
+    z-index: 1000;
+    display: block;
+    visibility: visible;
+}
+
+/* 大きなマーカー用バッジ */
+.photo-area-marker-simple .marker-content {
+    /* 親のサイズに応じてバッジサイズを調整 */
+}
+
+/* 中〜大サイズ用バッジ拡大 */
+.photo-area-marker-simple:not([style*="12px"]):not([style*="16px"]):not([style*="18px"]) .photo-count-badge {
+    padding: 2px 6px;
+    font-size: 11px;
+    border-radius: 10px;
+    border-width: 2px;
+    min-width: 18px;
+}
+
+.photo-count-badge.large-count {
+    font-size: 10px;
+    padding: 2px 5px;
+    min-width: 26px;
+    top: -2px;
+    right: -2px;
+}
+
+.primary-btn {
+    width: 100%;
+    background: #007AFF;
+    color: #fff;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.primary-btn:hover {
+    background: #0056CC;
+}
+
+/* Photo Modal */
+.photo-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Light Mode Modal */
+.modal-content {
+    position: relative;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90%;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+/* Dark Mode Modal */
+@media (prefers-color-scheme: dark) {
+    .modal-content {
+        background: rgba(0, 0, 0, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* Light Mode Modal Header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.modal-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1d1d1f;
+}
+
+/* Photo Modal Close Button - Light Mode */
+.photo-modal .close-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 14px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: rgba(0, 0, 0, 0.1);
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.photo-modal .close-btn:hover {
+    background: rgba(0, 0, 0, 0.2);
+    color: #1d1d1f;
+}
+
+/* Dark Mode Modal Header */
+@media (prefers-color-scheme: dark) {
+    .modal-header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .modal-header h3 {
+        color: #fff;
+    }
+    
+    /* Photo Modal Close Button - Dark Mode */
+    .photo-modal .close-btn {
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .photo-modal .close-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+    }
+}
+
+.modal-body {
+    position: relative;
+}
+
+.photo-container {
+    position: relative;
+    width: 100%;
+    max-height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+}
+
+.photo-container img {
+    max-width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+}
+
+.nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.7);
+    border: none;
+    border-radius: 20px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.nav-btn:hover {
+    background: rgba(0, 0, 0, 0.9);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.nav-btn.prev {
+    left: 16px;
+}
+
+.nav-btn.next {
+    right: 16px;
+}
+
+.photo-info {
+    padding: 20px;
+}
+
+/* Light Mode Photo Info */
+.photo-info p {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.8);
+    line-height: 1.5;
+    margin-bottom: 16px;
+}
+
+/* Dark Mode Photo Info */
+@media (prefers-color-scheme: dark) {
+    .photo-info p {
+        color: rgba(255, 255, 255, 0.8);
+    }
+}
+
+.photo-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+/* Light Mode Meta Row */
+.meta-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+/* Dark Mode Meta Row */
+@media (prefers-color-scheme: dark) {
+    .meta-row {
+        color: rgba(255, 255, 255, 0.7);
+    }
+}
+
+.meta-row i {
+    width: 16px;
+    color: #007AFF;
+}
+
+.photo-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+/* Light Mode Tags */
+.tag {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Mode Tags */
+@media (prefers-color-scheme: dark) {
+    .tag {
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+}
+
+
+
+/* Custom Photo Pin Styles */
+.photo-pin {
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.photo-pin:hover {
+    transform: scale(1.1);
+    border-color: #007AFF;
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+
+
+/* Loading Overlay */
+/* Light Mode Loading Overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* 強制的に隠すスタイル */
+.loading-overlay[style*="display: none"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Dark Mode Loading Overlay */
+@media (prefers-color-scheme: dark) {
+    .loading-overlay {
+        background: rgba(0, 0, 0, 0.9);
+    }
+}
+
+/* Light Mode Loading Spinner */
+.loading-spinner {
+    text-align: center;
+    color: #1d1d1f;
+    max-width: 400px;
+    padding: 20px;
+}
+
+/* ローディング画面のロゴ */
+.loading-logo {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.loading-ymca-logo {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    border-radius: 8px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    animation: logoFloat 2s ease-in-out infinite;
+    background: transparent;
+    display: block;
+    margin: 0 auto;
+}
+
+@keyframes logoFloat {
+    0%, 100% { 
+        transform: translateY(0px); 
+    }
+    50% { 
+        transform: translateY(-5px); 
+    }
+}
+
+.loading-spinner i {
+    font-size: 32px;
+    margin-bottom: 12px;
+    display: block;
+    color: #007AFF;
+}
+
+.loading-spinner h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #1d1d1f;
+}
+
+.loading-spinner p {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.6);
+    margin-bottom: 20px;
+}
+
+/* Progress Bar */
+.progress-container {
+    margin: 20px 0;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #007AFF, #64D2FF);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.6);
+    font-weight: 500;
+}
+
+/* Loading Steps */
+.loading-steps {
+    margin-top: 24px;
+    text-align: left;
+}
+
+.loading-step {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.loading-step i {
+    width: 16px;
+    height: 16px;
+    margin-right: 12px;
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.3);
+    display: inline-block;
+}
+
+.loading-step.active i {
+    color: #007AFF;
+}
+
+.loading-step.completed i {
+    color: #34C759;
+}
+
+.loading-step.completed i::before {
+    content: "\f00c"; /* check icon */
+}
+
+/* Dark Mode Loading Spinner */
+@media (prefers-color-scheme: dark) {
+    .loading-spinner {
+        color: #fff;
+    }
+    
+    .loading-spinner h2 {
+        color: #fff;
+    }
+    
+    .loading-spinner p {
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .progress-bar {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .progress-text {
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .loading-step {
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .loading-step i {
+        color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .loading-step.active i {
+        color: #64D2FF;
+    }
+    
+    .loading-step.completed i {
+        color: #32D74B;
+    }
+    
+    .loading-ymca-logo {
+        filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.1));
+    }
+}
+
+/* Animations */
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ===== アクセシビリティとモバイル体験向上 ===== */
+
+/* スクリーンリーダー対応 */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* フォーカス表示の改善 */
+.control-btn:focus,
+.organization-link:focus,
+button:focus,
+.photo-item:focus,
+.timeline-photo-item:focus {
+    outline: 2px solid #007AFF;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.25);
+}
+
+/* モーション軽減設定への対応 */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ダークモード対応強化 */
+@media (prefers-color-scheme: dark) {
+    /* フォーカス表示もダークモードに対応 */
+    .control-btn:focus,
+    .organization-link:focus,
+    button:focus,
+    .photo-item:focus,
+    .timeline-photo-item:focus {
+        outline-color: #64D2FF;
+        box-shadow: 0 0 0 4px rgba(100, 210, 255, 0.25);
+    }
+}
+
+/* より大きなタブレット向け調整 */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .header-content {
+        padding: 0 20px;
+    }
+    
+    .organization-link {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+    
+    .control-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 16px;
+    }
+}
+
+/* 大画面デスクトップ向け調整 */
+@media (min-width: 1200px) {
+    .modal-content {
+        max-width: 1000px;
+    }
+    
+    .area-info-panel {
+        max-width: 400px;
+    }
+}
+
+/* タッチデバイス向けホバー効果の制御 */
+@media (hover: none) and (pointer: coarse) {
+    /* タッチデバイスではホバー効果を無効化 */
+    .photo-item:hover,
+    .timeline-photo-item:hover,
+    .control-btn:hover {
+        transform: none;
+        box-shadow: inherit;
+    }
+    
+    /* タッチデバイスでは代わりにアクティブ状態を強調 */
+    .photo-item:active,
+    .timeline-photo-item:active,
+    .control-btn:active {
+        transform: scale(0.98);
+        opacity: 0.8;
+    }
+}
+
+/* 高コントラスト表示への対応 */
+@media (prefers-contrast: high) {
+    .control-btn,
+    .organization-link {
+        border: 2px solid currentColor;
+    }
+    
+    .photo-item,
+    .timeline-photo-item {
+        border: 1px solid rgba(0, 0, 0, 0.3);
+    }
+    
+    @media (prefers-color-scheme: dark) {
+        .photo-item,
+        .timeline-photo-item {
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+    }
+}
+
+/* パフォーマンス最適化：GPU アクセラレーション */
+.photo-item,
+.timeline-photo-item,
+.control-btn,
+.modal-content {
+    will-change: transform, opacity;
+    transform: translateZ(0); /* GPU加速を強制 */
+}
+
+/* レスポンシブ画像の改善 */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* 画像読み込み状態の視覚的改善 */
+.image-loading {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@media (prefers-color-scheme: dark) {
+    .image-loading {
+        background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+        background-size: 200% 100%;
+    }
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* エラー状態の改善表示 */
+.image-fallback {
+    opacity: 0.8;
+    filter: grayscale(0.3);
+    transition: opacity 0.3s ease;
+}
+
+.image-fallback:hover {
+    opacity: 1;
+    filter: grayscale(0);
+}
+
+
+
+/* Popup Styles */
+/* Light Mode Popup */
+.leaflet-popup-content-wrapper {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.leaflet-popup-content {
+    color: #1d1d1f;
+    margin: 16px;
+    line-height: 1.4;
+}
+
+.leaflet-popup-tip {
+    background: rgba(255, 255, 255, 0.95);
+}
+
+/* Dark Mode Popup */
+@media (prefers-color-scheme: dark) {
+    .leaflet-popup-content-wrapper {
+        background: rgba(0, 0, 0, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .leaflet-popup-content {
+        color: #fff;
+    }
+
+    .leaflet-popup-tip {
+        background: rgba(0, 0, 0, 0.95);
+    }
+}
+
+.popup-content {
+    text-align: center;
+}
+
+.popup-image {
+    width: 200px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.popup-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+/* Light Mode Popup Location */
+.popup-location {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.7);
+    margin-bottom: 8px;
+}
+
+/* Dark Mode Popup Location */
+@media (prefers-color-scheme: dark) {
+    .popup-location {
+        color: rgba(255, 255, 255, 0.7);
+    }
+}
+
+.popup-view-btn {
+    background: #007AFF;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.popup-view-btn:hover {
+    background: #0056CC;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .app-header {
+        height: 80px; /* 64px → 80px（+16px下側余白用） */
+    }
+    
+    .header-content {
+        padding: 20px 16px 12px; /* 下側に12pxの余白追加 */
+    }
+    
+    .main-content {
+        top: 80px; /* モバイル版ヘッダー高さに合わせて調整 */
+    }
+    
+    .area-info-panel {
+        left: 16px;
+        right: 16px;
+        width: auto;
+        max-width: none;
+    }
+    
+
+    
+    .map-controls {
+        bottom: 16px;
+        right: 16px;
+    }
+    
+    .modal-content {
+        width: 95%;
+        max-height: 95%;
+    }
+    
+    .photos-preview-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* 上記のモバイル版タイトル調整に統合済み */
+    
+    .area-info-panel {
+        left: 12px;
+        right: 12px;
+    }
+    
+    .area-info-content {
+        padding: 16px;
+    }
+    
+    .modal-header {
+        padding: 12px 16px;
+    }
+    
+    .photo-info {
+        padding: 16px;
+    }
+}
